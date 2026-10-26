@@ -11,8 +11,8 @@ body {
   --acento: #4fc76b;
   --acento-claro: #7bd88a;
   --acento-osc: #1c6b34;
-  --color-d: #4a7fd6;   /* decenas */
-  --color-u: #e05252;   /* unidades */
+  --color-d: #e05252;   /* decenas: rojo */
+  --color-u: #4a7fd6;   /* unidades: azul */
   font-family: 'Comic Neue', 'Trebuchet MS', sans-serif;
   background: linear-gradient(160deg, #fef6e4 0%, #e8f6ff 50%, #fef0f6 100%);
   color: #3a3a3a;
