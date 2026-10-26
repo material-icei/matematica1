@@ -94,10 +94,9 @@ function generarNumeros(modo) {
 }
 
 /* Valores correctos de cada casillero del esquema:
-   1) cada número se separa en decena y unidad (D1, U1, D2, U2)
-   2) se agrupan decenas con decenas y unidades con unidades (D1b, D2b, U1b, U2b)
-   3) se resuelve cada grupo por separado (parcialD, parcialU)
-   4) se juntan los dos resultados parciales (final) */
+   1) se agrupan decenas con decenas y unidades con unidades (D1b, D2b, U1b, U2b)
+   2) se resuelve cada grupo por separado (parcialD, parcialU)
+   3) se juntan los dos resultados parciales (final) */
 function calcularEsperados(a, b, modo) {
   const D1 = Math.floor(a / 10) * 10, U1 = a % 10;
   const D2 = Math.floor(b / 10) * 10, U2 = b % 10;
@@ -105,7 +104,6 @@ function calcularEsperados(a, b, modo) {
   const parcialD = esSuma ? D1 + D2 : D1 - D2;
   const parcialU = esSuma ? U1 + U2 : U1 - U2;
   return {
-    D1, U1, D2, U2,
     D1b: D1, D2b: D2, U1b: U1, U2b: U2,
     parcialD, parcialU,
     final: parcialD + parcialU
@@ -127,10 +125,10 @@ function nuevoEstado(modo) {
 
 /* =========================================================
    Construcción visual del esquema (una sola vez)
-   Espacio virtual de referencia: 960 x 480
+   Espacio virtual de referencia: 960 x 400
    ========================================================= */
 const ANCHO_V = 960;
-const ALTO_V = 480;
+const ALTO_V = 400;
 
 function pctX(x) { return (x / ANCHO_V * 100) + "%"; }
 function pctY(y) { return (y / ALTO_V * 100) + "%"; }
@@ -140,61 +138,47 @@ const CASILLEROS = [
   { id: "boxA", x: 300, y: 55, w: 110, h: 58, tipo: "fija" },
   { id: "boxB", x: 660, y: 55, w: 110, h: 58, tipo: "fija" },
 
-  // Nivel 1: cada número se separa en decenas y unidades
-  { id: "D1", x: 240, y: 170, w: 90, h: 54, tipo: "input", tono: "d", pista: "D" },
-  { id: "U1", x: 360, y: 170, w: 90, h: 54, tipo: "input", tono: "u", pista: "U" },
-  { id: "D2", x: 600, y: 170, w: 90, h: 54, tipo: "input", tono: "d", pista: "D" },
-  { id: "U2", x: 720, y: 170, w: 90, h: 54, tipo: "input", tono: "u", pista: "U" },
+  // Nivel 1: decenas con decenas, unidades con unidades
+  { id: "D1b", x: 220, y: 195, w: 90, h: 54, tipo: "input", tono: "d", pista: "D" },
+  { id: "D2b", x: 380, y: 195, w: 90, h: 54, tipo: "input", tono: "d", pista: "D" },
+  { id: "U1b", x: 580, y: 195, w: 90, h: 54, tipo: "input", tono: "u", pista: "U" },
+  { id: "U2b", x: 740, y: 195, w: 90, h: 54, tipo: "input", tono: "u", pista: "U" },
 
-  // Nivel 2: decenas con decenas, unidades con unidades
-  { id: "D1b", x: 220, y: 285, w: 90, h: 54, tipo: "input", tono: "d" },
-  { id: "D2b", x: 380, y: 285, w: 90, h: 54, tipo: "input", tono: "d" },
-  { id: "U1b", x: 580, y: 285, w: 90, h: 54, tipo: "input", tono: "u" },
-  { id: "U2b", x: 740, y: 285, w: 90, h: 54, tipo: "input", tono: "u" },
-
-  // Nivel 3: resultados parciales y resultado final
-  { id: "parcialD", x: 300, y: 405, w: 90, h: 54, tipo: "input", tono: "d" },
-  { id: "parcialU", x: 660, y: 405, w: 90, h: 54, tipo: "input", tono: "u" },
-  { id: "final", x: 850, y: 405, w: 118, h: 62, tipo: "destacada" }
+  // Nivel 2: resultados parciales y resultado final
+  { id: "parcialD", x: 300, y: 320, w: 90, h: 54, tipo: "input", tono: "d" },
+  { id: "parcialU", x: 660, y: 320, w: 90, h: 54, tipo: "input", tono: "u" },
+  { id: "final", x: 850, y: 320, w: 118, h: 62, tipo: "destacada" }
 ];
 
-const ORDEN_INPUTS = ["D1", "U1", "D2", "U2", "D1b", "D2b", "U1b", "U2b", "parcialD", "parcialU", "final"];
+const ORDEN_INPUTS = ["D1b", "D2b", "U1b", "U2b", "parcialD", "parcialU", "final"];
 
 // del: true → el signo cambia según el modo (+ o −)
 const OPERADORES = [
   { x: 480, y: 55, del: true },
 
-  { simbolo: "+", x: 300, y: 170 },
-  { simbolo: "+", x: 660, y: 170 },
+  { x: 300, y: 195, del: true },
+  { x: 660, y: 195, del: true },
 
-  { x: 300, y: 285, del: true },
-  { x: 660, y: 285, del: true },
-
-  { simbolo: "+", x: 480, y: 405 },
-  { simbolo: "=", x: 755, y: 405 }
+  { simbolo: "+", x: 480, y: 320 },
+  { simbolo: "=", x: 755, y: 320 }
 ];
 
 // Azul = decenas, Rojo = unidades
 const LINEAS = [
-  [300, 84, 240, 143, "azul"],
-  [300, 84, 360, 143, "roja"],
-  [660, 84, 600, 143, "azul"],
-  [660, 84, 720, 143, "roja"],
+  [300, 84, 220, 168, "azul"],
+  [300, 84, 580, 168, "roja"],
+  [660, 84, 380, 168, "azul"],
+  [660, 84, 740, 168, "roja"],
 
-  [240, 197, 220, 258, "azul"],
-  [600, 197, 380, 258, "azul"],
-  [360, 197, 580, 258, "roja"],
-  [720, 197, 740, 258, "roja"],
-
-  [220, 312, 300, 378, "azul"],
-  [380, 312, 300, 378, "azul"],
-  [580, 312, 660, 378, "roja"],
-  [740, 312, 660, 378, "roja"]
+  [220, 222, 300, 293, "azul"],
+  [380, 222, 300, 293, "azul"],
+  [580, 222, 660, 293, "roja"],
+  [740, 222, 660, 293, "roja"]
 ];
 
 const LETREROS = [
-  { texto: "decenas", x: 300, y: 455, clase: "d" },
-  { texto: "unidades", x: 660, y: 455, clase: "u" }
+  { texto: "decenas", x: 300, y: 372, clase: "d" },
+  { texto: "unidades", x: 660, y: 372, clase: "u" }
 ];
 
 function construirDiagrama() {
@@ -399,12 +383,12 @@ function cargarEjercicio() {
   });
   const feedback = document.getElementById("feedback");
   feedback.textContent = esModoGuiado()
-    ? "💡 Separá cada número en decenas y unidades."
+    ? "💡 Juntá las decenas con las decenas y las unidades con las unidades."
     : "";
   feedback.className = "feedback";
 
   actualizarCamino(false);
-  document.getElementById("input-D1").focus();
+  document.getElementById("input-D1b").focus();
 }
 
 function actualizarCamino(animar) {
@@ -574,7 +558,7 @@ function cerrarAlbum() {
   if (estado[modoActual].indice >= EJERCICIOS_POR_MODO) {
     mostrarFinal(false);
   } else {
-    document.getElementById("input-D1").focus();
+    document.getElementById("input-D1b").focus();
   }
 }
 
