@@ -163,7 +163,7 @@ const OPERADORES = [
   { simbolo: "=", x: 755, y: 320 }
 ];
 
-// Azul = decenas, Rojo = unidades
+// Rojo = decenas, Azul = unidades (el color real lo fijan --color-d y --color-u en style.css)
 const LINEAS = [
   [300, 84, 220, 168, "azul"],
   [300, 84, 580, 168, "roja"],
